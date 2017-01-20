@@ -6,7 +6,7 @@
     <style>
     circle{
         opacity: .8;
-        fill: LightSalmon
+        fill: DeepSkyBlue
         stroke: black;
     }
     h1{
@@ -18,7 +18,7 @@
     left: 14%;
     }
     div.years_buttons div{
-    background-color: powderblue;
+    background-color: Silver;
     color: black;
     float:left;
     padding: 3px;
@@ -62,12 +62,22 @@
             .enter()
             .append('path')
             .attr('d', path)
-            .style('fill', 'steelblue')
+            .style('fill', 'black')
             .style('stroke', 'black')
             .style('stroke-width', 0.5);
 
 
         function plot_points(data) {
+            debugger;
+          var winners = {}
+
+          for (i = 0; i < data.length; i++) {
+              if (data[i]['stage'] === 'FINAL ROUND') {
+                  if (data[i]['goals'].split('-')[0] > data[i]['goals'].split('-')[1]) {
+                      winners[data[i]['date'].getUTCFullYear()] = data[i]['team1']
+                  } else { winners[data[i]['date'].getUTCFullYear()] = data[i]['team2']}
+              }
+          };
 
           function agg_year(leaves) {
 
@@ -140,7 +150,7 @@
             .attr('r', function(d) {
                 return radius_scale(d.values['attendance'])
             })
-            .attr('fill', 'LightSalmon')
+            .attr('fill', 'DeepSkyBlue')
             .attr('opacity', .8)
             .attr('stroke', 'black')
 
@@ -165,7 +175,7 @@
                 .attr('cx', function(d) { return d.values['x']; } )
                 .attr('cy', function(d) { return d.values['y']; } )
                 .attr('r', function(d) { return radius_scale(d.values['attendance']); } )
-                .attr('fill', 'LightSalmon')
+                .attr('fill', 'DeepSkyBlue')
                 .attr('stroke', 'black')
                 .attr('opacity', .8)
 
@@ -177,11 +187,17 @@
                 } else {return .3;}
             };
 
+            function update_winners(d) {
+                if(winners[year].indexOf(d.properties.name) !== -1) {
+                    return 'gold';
+                } else {return 'black';}
+            };
+
             svg.selectAll('path')
                 .transition()
                 .duration(750)
-                .style('opacity', update_countries);
-                // .style('fill', update_countries)
+                .style('opacity', update_countries)
+                .style('fill', update_winners);
                 // .style('stroke', update_countries);
 
           };
@@ -207,13 +223,13 @@
                   buttons.on('click', function(d) {
                       d3.selectAll('.years_buttons')
                         .selectAll('div')
-                        .style('background-color', 'powderblue')
+                        .style('background-color', 'Silver')
                         .style('color', 'black');
 
                       d3.select(this)
                         .transition()
                         .duration(500)
-                        .style('background-color', 'steelblue')
+                        .style('background-color', 'black')
                         .style('color', 'white');
 
                       update(d);
